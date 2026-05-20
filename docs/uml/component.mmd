@@ -1,0 +1,33 @@
+componentDiagram
+    package "Presentation Layer" {
+        [TransactionView]
+        [DashboardView]
+        [BudgetView]
+    }
+
+    package "Business Logic Layer" {
+        [Validator]
+        [ExceptionHandler]
+    }
+
+    package "Data Access Layer" {
+        [DatabaseManager]
+    }
+
+    database "SQLite Database" {
+        [finance_tracker.db]
+    }
+
+    [TransactionView] ..> [Validator] : <<use>>
+    [DashboardView] ..> [Validator] : <<use>>
+    [BudgetView] ..> [Validator] : <<use>>
+
+    [TransactionView] ..> [ExceptionHandler] : <<use>>
+    [DashboardView] ..> [ExceptionHandler] : <<use>>
+    [BudgetView] ..> [ExceptionHandler] : <<use>>
+
+    [TransactionView] --> [DatabaseManager] : IDataAccess
+    [DashboardView] --> [DatabaseManager] : IDataAccess
+    [BudgetView] --> [DatabaseManager] : IDataAccess
+
+    [DatabaseManager] --> [finance_tracker.db] : SQLite driver

@@ -1,0 +1,44 @@
+sequenceDiagram
+    actor User
+    participant View as :TransactionView
+    participant Val as :Validator
+    participant DB as :DatabaseManager
+    participant SQLite as :SQLite DB
+
+    User->>View: 1: clicks Add Transaction
+    activate View
+    
+    alt validation passes
+        View->>Val: 2: validate_amount(value)
+        activate Val
+        Val-->>View: 3: return cleaned_amount
+        deactivate Val
+        
+        View->>Val: 4: validate_date(value)
+        activate Val
+        Val-->>View: 5: return validated_date
+        deactivate Val
+        
+        View->>Val: 6: validate_category(value, type)
+        activate Val
+        Val-->>View: 7: return category
+        deactivate Val
+        
+        View->>DB: 8: add_transaction(type, category, amount, date, desc)
+        activate DB
+        DB->>SQLite: 9: INSERT INTO transactions
+        activate SQLite
+        SQLite-->>DB: 10: return lastrowid
+        deactivate SQLite
+        DB-->>View: 11: return transaction_id
+        deactivate DB
+        
+        View->>User: 12: show success message
+    else validation fails
+        View->>Val: validate inputs
+        activate Val
+        Val-->>View: raise ValidationError
+        deactivate Val
+        View->>User: show error messagebox
+    end
+    deactivate View

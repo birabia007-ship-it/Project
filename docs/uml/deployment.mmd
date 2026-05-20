@@ -1,0 +1,30 @@
+flowchart TD
+    subgraph Device["«device» User's Desktop Computer"]
+        subgraph PythonEnv["«executionEnvironment» Python 3.10+ Runtime"]
+            Main["«artifact» main.py"]
+            DBMod["«artifact» database.py"]
+            ValMod["«artifact» validator.py"]
+            ExcMod["«artifact» exceptions.py"]
+        end
+
+        subgraph TkinterEnv["«executionEnvironment» Tkinter GUI Framework"]
+            TxnView["«artifact» transaction_view.py"]
+            DashView["«artifact» dashboard_view.py"]
+            BgtView["«artifact» budget_view.py"]
+        end
+
+        subgraph DBEngine["«database» SQLite"]
+            DBFile["«artifact» finance_tracker.db"]
+        end
+    end
+
+    subgraph FileSystem["«device» File System"]
+        Storage["Local Storage"]
+    end
+
+    PythonEnv -- "«library»" --> TkinterEnv
+    PythonEnv -- "«sqlite3»" --> DBEngine
+    Main -- "«manifest»" --> TxnView
+    Main -- "«manifest»" --> DashView
+    Main -- "«manifest»" --> BgtView
+    DBEngine -- "«local storage»" --> FileSystem

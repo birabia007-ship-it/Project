@@ -1,0 +1,100 @@
+classDiagram
+    class FinanceTrackerApp {
+        -root: Tk
+        -db: DatabaseManager
+        -notebook: Notebook
+        +run()
+        -_configure_styles()
+        -_build_ui()
+        -_on_close()
+    }
+
+    class DatabaseManager {
+        -conn: Connection
+        -cursor: Cursor
+        -db_path: str
+        +add_transaction(type, category, amount, date, description)
+        +get_all_transactions()
+        +delete_transaction(txn_id)
+        +search_transactions(keyword, type_filter, category_filter, date_from, date_to)
+        +get_summary(month, year)
+        +get_category_breakdown(month, year, txn_type)
+        +get_monthly_trend(year)
+        +set_budget(category, amount, month, year)
+        +get_budget(category, month, year)
+        +get_all_budgets(month, year)
+        +close()
+    }
+
+    class TransactionView {
+        -db: DatabaseManager
+        -tree: Treeview
+        -type_var: StringVar
+        +refresh()
+        +_add_transaction()
+        +_load_transactions()
+        +_filter_transactions()
+        +_delete_selected()
+    }
+
+    class DashboardView {
+        -db: DatabaseManager
+        -pie_canvas: Canvas
+        -bar_canvas: Canvas
+        +refresh()
+        -_draw_pie_chart()
+        -_draw_bar_chart()
+    }
+
+    class BudgetView {
+        -db: DatabaseManager
+        -budget_frame: Frame
+        +refresh()
+        -_set_budget()
+        -_create_budget_card()
+    }
+
+    class FinanceTrackerError {
+        <<Exception>>
+    }
+    class DatabaseError {
+        <<Exception>>
+    }
+    class ValidationError {
+        <<Exception>>
+    }
+    class InvalidAmountError {
+        <<Exception>>
+    }
+    class BudgetExceededError {
+        <<Exception>>
+    }
+    class TransactionNotFoundError {
+        <<Exception>>
+    }
+
+    class Validator {
+        <<Utility>>
+        +validate_amount(value)
+        +validate_date(value)
+        +validate_category(value, txn_type)
+        +validate_description(value)
+    }
+
+    FinanceTrackerApp *-- TransactionView
+    FinanceTrackerApp *-- DashboardView
+    FinanceTrackerApp *-- BudgetView
+    FinanceTrackerApp *-- DatabaseManager
+
+    TransactionView --> DatabaseManager
+    DashboardView --> DatabaseManager
+    BudgetView --> DatabaseManager
+
+    FinanceTrackerError <|-- DatabaseError
+    FinanceTrackerError <|-- ValidationError
+    FinanceTrackerError <|-- BudgetExceededError
+    FinanceTrackerError <|-- TransactionNotFoundError
+    ValidationError <|-- InvalidAmountError
+
+    TransactionView ..> Validator
+    BudgetView ..> Validator

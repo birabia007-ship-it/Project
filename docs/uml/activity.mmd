@@ -1,0 +1,42 @@
+stateDiagram-v2
+    [*] --> OpenApp : Start
+    OpenApp --> SelectTab
+    
+    state SelectTab {
+        [*] --> TransactionsTab
+        [*] --> DashboardTab
+        [*] --> BudgetsTab
+    }
+    
+    state TransactionsTab {
+        FillForm --> SubmitTransaction
+        SubmitTransaction --> ValidTransaction
+        ValidTransaction --> FillForm : [Invalid]
+        ValidTransaction --> SaveDatabase : [Valid]
+        SaveDatabase --> UpdateList
+        UpdateList --> ShowSuccess
+        ShowSuccess --> [*]
+    }
+    
+    state DashboardTab {
+        LoadData --> ForkCharts
+        state ForkCharts <<fork>>
+        ForkCharts --> DrawPieChart
+        ForkCharts --> DrawBarChart
+        state JoinCharts <<join>>
+        DrawPieChart --> JoinCharts
+        DrawBarChart --> JoinCharts
+        JoinCharts --> DisplayCards
+        DisplayCards --> [*]
+    }
+    
+    state BudgetsTab {
+        SetBudget --> CalculateSpending
+        CalculateSpending --> CheckLimit
+        CheckLimit --> ShowAlert : [Over 80%]
+        CheckLimit --> DisplayProgress : [Under 80%]
+        ShowAlert --> [*]
+        DisplayProgress --> [*]
+    }
+    
+    SelectTab --> [*] : Close App

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  transaction_service:
+    build: 
+      context: ./microservices
+      dockerfile: Dockerfile
+    command: uvicorn transaction_service.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./microservices:/app
+
+  budget_service:
+    build: 
+      context: ./microservices
+      dockerfile: Dockerfile
+    command: uvicorn budget_service.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - TRANSACTION_SERVICE_URL=http://transaction_service:8001
+
+  report_service:
+    build: 
+      context: ./microservices
+      dockerfile: Dockerfile
+    command: uvicorn report_service.main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - TRANSACTION_SERVICE_URL=http://transaction_service:8001
+
+  notification_service:
+    build: 
+      context: ./microservices
+      dockerfile: Dockerfile
+    command: uvicorn notification_service.main:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - BUDGET_SERVICE_URL=http://budget_service:8002
